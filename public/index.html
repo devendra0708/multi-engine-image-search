@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MultiSearch Images — Google · Bing · Yandex · Unsplash</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="10" height="10" rx="2" x="2" y="2" fill="#4f8ef7"/>
+          <rect width="10" height="10" rx="2" x="13" y="2" fill="#f7504f"/>
+          <rect width="10" height="10" rx="2" x="2" y="13" fill="#f7c34f"/>
+          <rect width="10" height="10" rx="2" x="13" y="13" fill="#4fcf7e"/>
+        </svg>
+        <span>MultiSearch</span>
+      </div>
+
+      <div class="search-bar">
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Search across Google, Bing, Yandex, Unsplash &amp; Pexels…"
+          autocomplete="off"
+          autofocus
+        />
+        <button id="searchBtn" class="btn-search" aria-label="Search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="engine-filter" id="engineFilter">
+        <button class="engine-btn active" data-engine="all">
+          <span class="engine-dot all"></span> All
+        </button>
+        <button class="engine-btn" data-engine="google">
+          <span class="engine-dot google"></span> Google
+        </button>
+        <button class="engine-btn" data-engine="bing">
+          <span class="engine-dot bing"></span> Bing
+        </button>
+        <button class="engine-btn" data-engine="yandex">
+          <span class="engine-dot yandex"></span> Yandex
+        </button>
+        <button class="engine-btn" data-engine="unsplash">
+          <span class="engine-dot unsplash"></span> Unsplash
+        </button>
+        <button class="engine-btn" data-engine="pexels">
+          <span class="engine-dot pexels"></span> Pexels
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Status bar -->
+  <div class="status-bar" id="statusBar" style="display:none;">
+    <span id="statusText"></span>
+  </div>
+
+  <!-- Engine status notices -->
+  <div class="notices" id="notices"></div>
+
+  <!-- Main content -->
+  <main class="main">
+    <!-- Hero (shown before first search) -->
+    <div class="hero" id="hero">
+      <div class="hero-icon">
+        <svg width="72" height="72" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="10" height="10" rx="2.5" x="2" y="2" fill="#4f8ef7" opacity="0.9"/>
+          <rect width="10" height="10" rx="2.5" x="13" y="2" fill="#f7504f" opacity="0.9"/>
+          <rect width="10" height="10" rx="2.5" x="2" y="13" fill="#f7c34f" opacity="0.9"/>
+          <rect width="10" height="10" rx="2.5" x="13" y="13" fill="#4fcf7e" opacity="0.9"/>
+        </svg>
+      </div>
+      <h1>Search Images Everywhere</h1>
+      <p>Find images from Google, Bing, Yandex, and Unsplash — all in one place, all at once.</p>
+      <div class="hero-engines">
+        <span class="hero-engine google">Google Images</span>
+        <span class="hero-engine bing">Bing Images</span>
+        <span class="hero-engine yandex">Yandex Images</span>
+        <span class="hero-engine unsplash">Unsplash</span>
+        <span class="hero-engine pexels">Pexels</span>
+      </div>
+    </div>
+
+    <!-- Results grid -->
+    <div class="results-header" id="resultsHeader" style="display:none;">
+      <div class="results-stats" id="resultsStats"></div>
+      <div class="sort-controls">
+        <label for="sortSelect">Sort:</label>
+        <select id="sortSelect">
+          <option value="mixed">Mixed (all engines)</option>
+          <option value="google">Google first</option>
+          <option value="bing">Bing first</option>
+          <option value="yandex">Yandex first</option>
+          <option value="unsplash">Unsplash first</option>
+          <option value="pexels">Pexels first</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="masonry-grid" id="imageGrid"></div>
+
+    <!-- Load More -->
+    <div class="load-more-wrap" id="loadMoreWrap" style="display:none;">
+      <button class="btn-load-more" id="loadMoreBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="1 4 1 10 7 10"/>
+          <path d="M3.51 15a9 9 0 1 0 .49-3.32"/>
+        </svg>
+        Load More
+      </button>
+    </div>
+
+    <!-- Loading skeleton -->
+    <div class="loading-grid" id="loadingGrid" style="display:none;">
+      <div class="skeleton-card" v-for="i in 20">
+        <div class="skeleton-img"></div>
+        <div class="skeleton-text"></div>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div class="empty-state" id="emptyState" style="display:none;">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="11" cy="11" r="8"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <p>No images found. Try a different search term.</p>
+    </div>
+  </main>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox" style="display:none;">
+    <button class="lightbox-close" id="lightboxClose" aria-label="Close">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+    <button class="lightbox-nav prev" id="lightboxPrev" aria-label="Previous">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </button>
+    <button class="lightbox-nav next" id="lightboxNext" aria-label="Next">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="9 18 15 12 9 6"/>
+      </svg>
+    </button>
+    <div class="lightbox-content">
+      <div class="lightbox-img-wrap">
+        <img id="lightboxImg" src="" alt="" />
+        <div class="lightbox-loading" id="lightboxLoading">
+          <div class="spinner"></div>
+        </div>
+      </div>
+      <div class="lightbox-info">
+        <div class="lightbox-engine-badge" id="lightboxEngine"></div>
+        <p class="lightbox-title" id="lightboxTitle"></p>
+        <div class="lightbox-actions">
+          <a id="lightboxOpen" href="#" target="_blank" rel="noopener noreferrer" class="btn-action primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+              <polyline points="15 3 21 3 21 9"/>
+              <line x1="10" y1="14" x2="21" y2="3"/>
+            </svg>
+            Open Image
+          </a>
+          <a id="lightboxSource" href="#" target="_blank" rel="noopener noreferrer" class="btn-action secondary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="2" y1="12" x2="22" y2="12"/>
+              <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
+            </svg>
+            Visit Source
+          </a>
+          <button class="btn-action copy" id="lightboxCopy">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+              <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+            </svg>
+            Copy URL
+          </button>
+        </div>
+        <div class="lightbox-meta" id="lightboxMeta"></div>
+      </div>
+    </div>
+  </div>
+  <div class="lightbox-backdrop" id="lightboxBackdrop" style="display:none;"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
